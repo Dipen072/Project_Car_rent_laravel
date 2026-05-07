@@ -19,6 +19,10 @@ return new class extends Migration
             $table->decimal('price_per_day', 10, 2);
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            $table->integer('doors')->default(4);
+            $table->integer('seats')->default(5);
+            $table->string('transmission')->default('Automatic');
+            $table->integer('min_age')->default(18);
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

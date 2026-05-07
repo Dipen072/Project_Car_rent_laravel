@@ -15,8 +15,8 @@ class CarController extends Controller
 
     public function cars()
     {
-        $cars = Car::all(); 
-        $categories = categories::where('status', 'Active')->get();
+        $cars = Car::paginate(6); 
+        $categories = Category::where('status', 'active')->get(); // fixed model case
         return view('website.cars', compact('cars', 'categories'));
     }
 
@@ -32,7 +32,7 @@ class CarController extends Controller
 
     public function index()
    {
-    $car_arr = car::all();
+    $car_arr = Car::paginate(10);
     return view('admin.manage_cars', ['car_arr' => $car_arr]);
    }
 
@@ -53,38 +53,38 @@ class CarController extends Controller
     {
 
         $request->validate([
-            'car_name' => 'required',
-            'brand' => 'required',
-            'category_id' => 'required|integer',
-            'price_per_day' => 'required|numeric',
-            'image' => 'required|image|mimes:jpg,jpeg,png',
-            'description' => 'required',
+            'car_name'     => 'required',
+            'brand'        => 'required',
+            'category_id'  => 'required|integer',
+            'price_per_day'=> 'required|numeric',
+            'image'        => 'required|file|mimes:jpg,jpeg,png,avif,webp,gif|max:5120',
+            'description'  => 'required',
+            'doors'        => 'required|integer|min:2|max:6',
+            'seats'        => 'required|integer|min:2|max:9',
+            'transmission' => 'required|in:Automatic,Manual',
+            'min_age'      => 'required|integer|min:18|max:30',
         ]);
 
         $table = new Car();
-        $table->car_name = $request->car_name;
-        $table->brand = $request->brand;
+        $table->car_name    = $request->car_name;
+        $table->brand       = $request->brand;
         $table->category_id = $request->category_id;
         $table->price_per_day = $request->price_per_day;
         $table->description = $request->description;
+        $table->doors       = $request->doors;
+        $table->seats       = $request->seats;
+        $table->transmission= $request->transmission;
+        $table->min_age     = $request->min_age;
 
-         // image upload
-
-         if($request->hasFile('image')){
-            $file = time().'.'.$request->image->extension();
+        if ($request->hasFile('image')) {
+            $file = time() . '.' . $request->image->extension();
             $request->image->move('upload/cars', $file);
             $table->image = $file;
-         }
-        
+        }
 
         $table->save();
-        return response()->json([
-            'status' => 1,
-            'message' => 'Car Added Successfully!',
-            'data' => $table,
-        ]);
         Alert::success('Car Added Successfully');
-        return back();
+        return redirect(url('manage_cars'));
     }
 
     /**

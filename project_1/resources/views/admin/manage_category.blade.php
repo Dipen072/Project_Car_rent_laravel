@@ -54,6 +54,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-3">
+            {{ $categories->links('pagination::bootstrap-5') }}
+        </div>
     </div>
 </div>
 

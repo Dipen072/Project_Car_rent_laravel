@@ -79,8 +79,13 @@ function active($currect_page){
                   <li><a href="/contact" class="<?php active('contact')?>">Contact</a></li>
                   @if(session()->has('user_id'))
                   <li><a href="/booking" class="<?php active('booking')?>">Bookings</a></li>
-                  <li><a href="/user-profile">Hi...<i class="fa fa-user"></i> {{session('user_name')}}</a></li>
-                  <li><a href="/logout">Logout</a></li>
+                  <li class="has-children">
+                    <a href="/user-profile">Hi... <i class="fa fa-user"></i> {{session('user_name')}}</a>
+                    <ul class="dropdown">
+                      <li><a href="/user-profile">My Profile</a></li>
+                      <li><a href="/logout">Logout</a></li>
+                    </ul>
+                  </li>
                   @else
                   <li><a href="/booking" class="<?php active('booking')?>">Booking</a></li>
                   <li><a href="/login" class="<?php active('login')?>">Login</a></li>

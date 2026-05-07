@@ -13,7 +13,7 @@ class BookingController extends Controller
     // List available cars for users
     public function index()
     {
-        $cars = Car::all();
+        $cars = Car::paginate(6);
         return view('website.cars', compact('cars'));
     }
 
@@ -66,6 +66,27 @@ class BookingController extends Controller
         $booking->total_price = $total_price;
         $booking->status = 'pending';
         $booking->save();
+
+        // Get customer details
+        $customer = \App\Models\Customer::find(session('user_id'));
+        if ($customer && $customer->email) {
+            $bookingData = [
+                'customer_name' => $customer->name,
+                'car_name' => $car->car_name,
+                'brand' => $car->brand,
+                'from_date' => $request->from_date,
+                'to_date' => $request->to_date,
+                'total_price' => $total_price,
+                'status' => 'Pending'
+            ];
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($customer->email)->send(new \App\Mail\BookingNotificationMail($bookingData));
+            } catch (\Exception $e) {
+                // Log the error or handle it silently if mail fails so it doesn't break the booking flow
+                \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
+            }
+        }
 
         Alert::success('Success', 'Car booked successfully! Waiting for admin approval.');
         return redirect('/booking');

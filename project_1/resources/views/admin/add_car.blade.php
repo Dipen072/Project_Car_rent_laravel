@@ -68,6 +68,28 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label>Doors</label>
+                    <input type="number" name="doors" class="form-control" value="{{ old('doors', 4) }}" min="2" max="6" required>
+                </div>
+                <div class="col-md-3">
+                    <label>Seats</label>
+                    <input type="number" name="seats" class="form-control" value="{{ old('seats', 5) }}" min="2" max="9" required>
+                </div>
+                <div class="col-md-3">
+                    <label>Transmission</label>
+                    <select name="transmission" class="form-control" required>
+                        <option value="Automatic" {{ old('transmission') == 'Automatic' ? 'selected' : '' }}>Automatic</option>
+                        <option value="Manual" {{ old('transmission') == 'Manual' ? 'selected' : '' }}>Manual</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Minimum Age</label>
+                    <input type="number" name="min_age" class="form-control" value="{{ old('min_age', 18) }}" min="18" max="30" required>
+                </div>
+            </div>
+
             <div class="row mt-3">
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary">Submit</button>

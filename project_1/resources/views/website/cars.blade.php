@@ -37,7 +37,7 @@
 
         <div class="item-1-contents">
           <div class="text-center">
-            <h3>{{ $car->name }}</h3>
+            <h3>{{ $car->car_name }}</h3>
 
             <div class="rating">
               <span class="icon-star text-warning"></span>
@@ -72,6 +72,11 @@
     </div>
     @endforeach
 
+    </div>
+    <div class="row mt-4">
+      <div class="col-12 d-flex justify-content-center">
+        {{ $cars->links('pagination::bootstrap-5') }}
+      </div>
     </div>
   </div>
 </div>

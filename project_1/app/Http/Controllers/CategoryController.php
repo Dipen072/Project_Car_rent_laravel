@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::paginate(10);
         return view('admin.manage_category', compact('categories'));
     }
 
@@ -38,7 +39,8 @@ class CategoryController extends Controller
         $category->status = $request->status ?? 'active';
         $category->save();
 
-        return redirect('/manage_category')->with('success', 'Category added successfully.');
+        Alert::success('Success', 'Category added successfully.');
+        return redirect('/manage_category');
     }
 
     public function edit($id)
@@ -72,7 +74,8 @@ class CategoryController extends Controller
         $category->status = $request->status ?? 'active';
         $category->save();
 
-        return redirect('/manage_category')->with('success', 'Category updated successfully.');
+        Alert::success('Success', 'Category updated successfully.');
+        return redirect('/manage_category');
     }
 
     public function destroy($id)
@@ -86,6 +89,7 @@ class CategoryController extends Controller
         
         $category->delete();
 
-        return redirect('/manage_category')->with('success', 'Category deleted successfully.');
+        Alert::success('Success', 'Category deleted successfully.');
+        return redirect('/manage_category');
     }
 }

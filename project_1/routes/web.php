@@ -31,7 +31,7 @@ Route::get('/bookings', function () {
 
 Route::get('/customers',[CustomerController:: class,'display_customers']);
 
-Route::get('/cars', [BookingController::class, 'index']);
+Route::get('/cars', [CarController::class, 'cars']);
 
 Route::get('/contact', [ContactController::class, 'create']);
 Route::post('/ins_contact', [ContactController::class, 'store']);

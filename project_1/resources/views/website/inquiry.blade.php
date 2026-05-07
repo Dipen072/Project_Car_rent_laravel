@@ -1,3 +1,5 @@
-<h1 style="background-color: brown;color:white">Hi welcome to Tops Technologies</h1>
+<h1 style="background-color: brown;color:white">Car Rental Service</h1>
+<br><br>
 
-<h1 style="background-color: brown;color:white">We will contact you soon...!</h1>
+
+<h1 style="background-color: brown;color:white">Thank you for choosing our service</h1>

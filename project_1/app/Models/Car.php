@@ -15,6 +15,10 @@ class Car extends Model
         'price_per_day',
         'image',
         'description',
+        'doors',
+        'seats',
+        'transmission',
+        'min_age',
     ];
 
     public function category()
