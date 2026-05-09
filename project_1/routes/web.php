@@ -58,6 +58,12 @@ Route::middleware('user_after')->group(function () {
     Route::get('/edit_profile/{id}', [CustomerController::class, 'edit']);
     Route::post('/update_profile/{id}', [CustomerController::class, 'update']);
     Route::get('/logout',[CustomerController::class,'user_logout']);
+
+    // Payment Routes
+    Route::get('/payment/{booking_id}', [\App\Http\Controllers\PaymentController::class, 'paymentPage']);
+    Route::post('/payment/create-order/{booking_id}', [\App\Http\Controllers\PaymentController::class, 'createOrder']);
+    Route::post('/payment/success', [\App\Http\Controllers\PaymentController::class, 'paymentSuccess']);
+    Route::post('/payment/failure', [\App\Http\Controllers\PaymentController::class, 'paymentFailure']);
 });
 
 Route::get('/single', function () {

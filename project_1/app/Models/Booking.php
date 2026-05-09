@@ -13,6 +13,9 @@ class Booking extends Model
         'to_date',
         'total_price',
         'status',
+        'payment_id',
+        'payment_status',
+        'payment_method',
     ];
 
     public function customer()

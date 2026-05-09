@@ -88,8 +88,8 @@ class BookingController extends Controller
             }
         }
 
-        Alert::success('Success', 'Car booked successfully! Waiting for admin approval.');
-        return redirect('/booking');
+        Alert::success('Success', 'Car booked successfully! Please complete your payment.');
+        return redirect('/payment/' . $booking->id);
     }
 
     // View User's Booking History

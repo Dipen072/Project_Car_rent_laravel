@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
-use App\Models\Payment;
 use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Log;
 
@@ -35,8 +34,8 @@ class PaymentController extends Controller
         }
 
         // Check if already paid
-        if ($booking->status == 'confirmed') {
-            return redirect('/booking')->with('error', 'Booking already confirmed.');
+        if ($booking->payment_status == 'success' || $booking->status == 'approved') {
+            return redirect('/booking')->with('error', 'Booking already paid or confirmed.');
         }
 
         return view('website.payment', compact('booking'));
@@ -61,18 +60,13 @@ class PaymentController extends Controller
                 'payment_capture' => 1, // Auto capture
             ]);
 
-            // Create payment record
-            $payment = Payment::create([
-                'booking_id' => $booking->id,
-                'amount' => $booking->total_price,
-                'status' => 'pending',
-                'payment_data' => ['order_id' => $order->id],
-            ]);
-
             return response()->json([
                 'order_id' => $order->id,
                 'amount' => $order->amount,
                 'key' => env('RAZORPAY_KEY'),
+                'customer_name' => $booking->customer->name ?? 'Customer',
+                'customer_email' => $booking->customer->email ?? '',
+                'customer_phone' => $booking->customer->mobile ?? ''
             ]);
         } catch (\Exception $e) {
             Log::error('Razorpay order creation failed: ' . $e->getMessage());
@@ -89,6 +83,7 @@ class PaymentController extends Controller
             'razorpay_payment_id' => 'required',
             'razorpay_order_id' => 'required',
             'razorpay_signature' => 'required',
+            'booking_id' => 'required'
         ]);
 
         try {
@@ -101,25 +96,19 @@ class PaymentController extends Controller
 
             $this->getRazorpay()->utility->verifyPaymentSignature($attributes);
 
-            // Find payment by order_id
-            $payment = Payment::where('payment_data->order_id', $request->razorpay_order_id)->first();
+            $booking = Booking::findOrFail($request->booking_id);
 
-            if (!$payment) {
-                return redirect('/booking')->with('error', 'Payment record not found.');
-            }
+            // Fetch payment method details from Razorpay if needed
+            $paymentDetails = $this->getRazorpay()->payment->fetch($request->razorpay_payment_id);
+            $paymentMethod = $paymentDetails->method ?? 'netbanking';
 
-            // Update payment
-            $payment->update([
+            // Update booking
+            $booking->update([
                 'payment_id' => $request->razorpay_payment_id,
-                'status' => 'success',
-                'payment_data' => array_merge($payment->payment_data ?? [], [
-                    'signature' => $request->razorpay_signature,
-                    'verified_at' => now(),
-                ]),
+                'payment_status' => 'success',
+                'payment_method' => $paymentMethod,
+                'status' => 'approved'
             ]);
-
-            // Update booking status
-            $payment->booking->update(['status' => 'confirmed']);
 
             return redirect('/booking')->with('success', 'Payment successful! Booking confirmed.');
         } catch (\Exception $e) {
@@ -133,14 +122,12 @@ class PaymentController extends Controller
      */
     public function paymentFailure(Request $request)
     {
-        $order_id = $request->get('razorpay_order_id');
-
-        $payment = Payment::where('payment_data->order_id', $order_id)->first();
-
-        if ($payment) {
-            $payment->update(['status' => 'failed']);
-            // Optionally, update booking to cancelled or keep pending
-            $payment->booking->update(['status' => 'pending']); // Or 'cancelled'
+        $booking_id = $request->get('booking_id');
+        if ($booking_id) {
+            $booking = Booking::find($booking_id);
+            if ($booking) {
+                $booking->update(['payment_status' => 'failed']);
+            }
         }
 
         return redirect('/booking')->with('error', 'Payment failed. Please try again.');

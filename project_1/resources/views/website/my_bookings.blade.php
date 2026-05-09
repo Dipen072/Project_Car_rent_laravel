@@ -24,6 +24,7 @@
                           <th>To Date</th>
                           <th>Total Amount</th>
                           <th>Status</th>
+                          <th>Payment</th>
                           <th>Booked On</th>
                       </tr>
                   </thead>
@@ -49,11 +50,21 @@
                                   <span class="badge badge-info p-2">Completed</span>
                               @endif
                           </td>
+                          <td>
+                              @if($booking->payment_status == 'success')
+                                  <span class="badge badge-success p-2">Paid</span>
+                              @else
+                                  <span class="badge badge-warning text-dark p-2">Unpaid</span>
+                                  @if($booking->status != 'rejected' && $booking->status != 'completed')
+                                    <a href="{{ url('/payment/' . $booking->id) }}" class="btn btn-sm btn-primary mt-1">Pay Now</a>
+                                  @endif
+                              @endif
+                          </td>
                           <td>{{ $booking->created_at->format('d M, Y') }}</td>
                       </tr>
                       @empty
                       <tr>
-                          <td colspan="7" class="text-center">You haven't booked any cars yet.</td>
+                          <td colspan="8" class="text-center">You haven't booked any cars yet.</td>
                       </tr>
                       @endforelse
                   </tbody>
